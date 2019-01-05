@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Route, withRouter, Switch } from 'react-router-dom';
 
 import HeaderBar from './header-bar';
-import Demo from './demo';
+// import Demo from './demo';
 import LoginPage from './login/login-page';
 import Dashboard from './dashboard/index';
 import RegistrationPage from './registration/registration-page';
@@ -40,7 +40,7 @@ export class App extends React.Component {
       <>
         <HeaderBar />
         <Switch>
-          <Route exact path='/demo' component={Demo} />
+          {/* <Route exact path='/demo' component={Demo} /> */}
           <Route exact path="/dashboard" component={Dashboard} />
           <Route exact path="/register" component={RegistrationPage} />
           <Route path='/' component={LoginPage} />
