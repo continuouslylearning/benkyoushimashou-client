@@ -43,6 +43,7 @@ const storeAuthInfo = (authToken, dispatch) => {
 export const login = (username, password) => dispatch => {
   dispatch(authRequest());
 
+  // if the request is successful, 'data' property on the response object represents the response from the server
   return axios({
     method: 'post',
     url: `${API_BASE_URL}/auth/login`,
@@ -51,6 +52,7 @@ export const login = (username, password) => dispatch => {
   })
     .then(res => storeAuthInfo(res.data.authToken, dispatch))
     .catch(err => {
+      // if server does not respond to the request, err object does not have a response property
       let message;
       if (!err.response || err.response.status === 500) {
         message = 'Unable to login. Please try again later.';
