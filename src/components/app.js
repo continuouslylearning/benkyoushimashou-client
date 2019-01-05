@@ -4,9 +4,9 @@ import { Route, withRouter, Switch } from 'react-router-dom';
 
 import HeaderBar from './header-bar';
 import Demo from './demo';
-import LandingPage from './landing-page';
+import LoginPage from './login/login-page';
 import Dashboard from './dashboard/index';
-import RegistrationPage from './registration-page';
+import RegistrationPage from './registration/registration-page';
 import { refreshAuthToken } from '../actions/auth';
 import './app.css';
 
@@ -43,7 +43,7 @@ export class App extends React.Component {
           <Route exact path='/demo' component={Demo} />
           <Route exact path="/dashboard" component={Dashboard} />
           <Route exact path="/register" component={RegistrationPage} />
-          <Route path='/' component={LandingPage} />
+          <Route path='/' component={LoginPage} />
         </Switch>
 
       </>

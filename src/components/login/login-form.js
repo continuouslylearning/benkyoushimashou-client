@@ -1,16 +1,11 @@
 import React from 'react';
 import { Field, reduxForm, focus, clearSubmitErrors } from 'redux-form';
-import { registerUser } from '../actions/users';
-import { login } from '../actions/auth';
-import Input from './input';
+import Input from '../input';
+import { login } from '../../actions/auth';
 
-export class RegistrationForm extends React.Component {
+export class LoginForm extends React.Component {
   onSubmit(values) {
-    const { username, password } = values;
-    const user = { username, password };
-    return this.props
-      .dispatch(registerUser(user))
-      .then(() => this.props.dispatch(login(username, password)));
+    return this.props.dispatch(login(values.username, values.password));
   }
 
   render() {
@@ -24,7 +19,7 @@ export class RegistrationForm extends React.Component {
       <>
         {error}
         <form
-          className="registration-form"
+          className="login-form"
           onSubmit={this.props.handleSubmit(values =>
             this.onSubmit(values)
           )}>
@@ -33,18 +28,19 @@ export class RegistrationForm extends React.Component {
             component={Input}
             type="text"
             name="username"
+            id="username"
           />
           <label htmlFor="password">Password</label>
           <Field
             component={Input}
             type="password"
             name="password"
+            id="password"
           />
           <button
-            type="submit"
-            disabled={this.props.pristine || this.props.submitting}
-          >
-            Register
+            className='form-button' 
+            disabled={this.props.pristine || this.props.submitting}>
+            Login
           </button>
         </form>
       </>
@@ -53,10 +49,9 @@ export class RegistrationForm extends React.Component {
 }
 
 export default reduxForm({
-  form: 'registration',
-  onSubmitFail: (errors, dispatch) =>
-    dispatch(focus('registration', Object.keys(errors)[0])),
+  form: 'login',
+  onSubmitFail: (errors, dispatch) => dispatch(focus('login', 'username')),
   onChange: (values, dispatch, props) => {
-    if (props.error) dispatch(clearSubmitErrors('registration'));
+    if (props.error) dispatch(clearSubmitErrors('login'));
   }
-})(RegistrationForm);
+})(LoginForm);
