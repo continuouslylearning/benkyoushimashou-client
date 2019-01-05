@@ -1,0 +1,21 @@
+* {
+	margin: 0;
+	padding: 0;
+	font-family: 'Cabin', sans-serif;
+	box-sizing: border-box;
+}
+
+body {
+	height: 100%;
+	font-size: 0.625rem;
+	background-image: url(../../images/background.jpg);
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+@media (max-width: 1600px) and (max-height: 1200px) {
+	body {
+		background-size: auto;
+	}
+}
