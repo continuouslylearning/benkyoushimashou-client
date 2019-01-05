@@ -3,7 +3,7 @@ import { reducer as formReducer } from 'redux-form';
 import thunk from 'redux-thunk';
 import { loadAuthToken } from './local-storage';
 import authReducer from './reducers/auth';
-import questionReducer from './reducers/questions';
+import questionReducer from './reducers/question';
 import { setAuthToken, refreshAuthToken } from './actions/auth';
 
 const store = createStore(
