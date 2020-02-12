@@ -5,7 +5,7 @@ const questionsEndpoint = API_BASE_URL + '/api/questions';
 export const FETCH_QUESTION_SUCCESS = 'FETCH_QUESTION_SUCCESS';
 export const fetchQuestionSuccess = (question) => ({
 	type: FETCH_QUESTION_SUCCESS,
-	question,
+	question
 });
 
 export const FETCH_QUESTION_REQUEST = 'QUESTION_REQUEST';
@@ -35,39 +35,46 @@ export const answerQuestionError = error => ({
 	error
 });
 
-export const fetchQuestion = () => (dispatch, getState) => {
+export const fetchQuestion = () => async (dispatch, getState) => {
 	const token = getState().auth.authToken;
 
 	dispatch(fetchQuestionRequest());
 
-	return axios.get(
-		questionsEndpoint,
-		{
+	try {
+		const res = await axios({
 			headers: {
 				'Content-Type': 'application/json',
 				Authorization: `Bearer ${token}`
-			}
-		})
-		.then(({ data }) => {
-			dispatch(fetchQuestionSuccess(data));
-		})
-		.catch(err => dispatch(fetchQuestionError(err)));
+			},
+			method: 'GET',
+			url: questionsEndpoint
+		});
+		
+		dispatch(fetchQuestionSuccess(res.data));
+	} catch(err) {
+		dispatch(fetchQuestionError(err));
+	}
 };
 
-export const answeredQuestion = (answeredCorrectly) => (dispatch, getState) => {
+export const answeredQuestion = (answeredCorrectly) => async (dispatch, getState) => {
 	const token = getState().auth.authToken;
 	dispatch(answerQuestionRequest());
-	return axios.put(
-		questionsEndpoint,
-		{ answeredCorrectly },
-		{
+
+	try {
+		await axios({
+			data: { 
+				answeredCorrectly 
+			},
 			headers: {
 				'Content-Type': 'application/json',
 				Authorization: `Bearer ${token}`
-			}
-		})
-		.then(() => {
-			dispatch(answerQuestionSuccess());
-		})
-		.catch(err => dispatch(answerQuestionError(err)));
+			},
+			method: 'PUT', 
+			url: questionsEndpoint
+		});
+
+		dispatch(answerQuestionSuccess());
+	} catch(err) {
+		dispatch(answerQuestionError(err));
+	}
 };

@@ -40,58 +40,67 @@ const storeAuthInfo = (authToken, dispatch) => {
 	saveAuthToken(authToken);
 };
 
-export const login = (username, password, fromForm) => dispatch => {
+export const login = (username, password, fromForm) => async (dispatch) => {
 	if (!fromForm) {
 		dispatch(authRequest());
 	}
 
-	return axios({
-		method: 'post',
-		url: `${API_BASE_URL}/auth/login`,
-		headers: { 'Content-Type': 'application/json' },
-		data: { username, password }
-	})	
-		.then(res => storeAuthInfo(res.data.authToken, dispatch))
-		.catch(err => {
-			// if server does not respond to the request, err object does not have a response property
-			let message;
-			if (!err.response || err.response.status === 500) {
-				message = 'Unable to login. Please try again later.';
-			} else {
-				message = err.response.data.message;
-			}
-
-			if (fromForm) {
-				return Promise.reject(
-					new SubmissionError({
-						_error: message
-					})
-				);
-			} 
-
-			dispatch(authError({ message }));
+	try {
+		const res = await axios({
+			data: { 
+				username, 
+				password 
+			},
+			headers: { 
+				'Content-Type': 'application/json' 
+			},
+			method: 'POST',
+			url: `${API_BASE_URL}/auth/login`
 		});
+
+		storeAuthInfo(res.data.authToken, dispatch);
+	} catch(err) {
+		let message;
+		if (!err.response || err.response.status === 500) {
+			message = 'Unable to login. Please try again later.';
+		} else {
+			message = err.response.data.message;
+		}
+
+		if (fromForm) {
+			throw new SubmissionError({
+				_error: message
+			});
+		} 
+
+		dispatch(authError({ message }));
+	}
 };
 
-export const refreshAuthToken = () => (dispatch, getState) => {
+export const refreshAuthToken = () => async (dispatch, getState) => {
 	dispatch(authRequest());
 	const authToken = getState().auth.authToken;
 
-	return axios({
-		method: 'post',
-		url: `${API_BASE_URL}/auth/refresh`,
-		headers: { Authorization: `Bearer ${authToken}`}
-	})
-		.then(res => storeAuthInfo(res.data.authToken, dispatch))
-		.catch(err => {
-			let message;
-			if (!err.response || err.response.status === 500) {
-				message = 'Unable to login. Please try again later.';
-			} else {
-				message = err.response.data.message;
-			}
-			dispatch(authError({ message }));
-			dispatch(clearAuth());
-			clearAuthToken(authToken);
+	try {
+		const res = await axios({
+			headers: { 
+				Authorization: `Bearer ${authToken}`
+			},
+			method: 'POST',
+			url: `${API_BASE_URL}/auth/refresh`
 		});
+		
+		storeAuthInfo(res.data.authToken, dispatch);
+	} catch(err) {
+		let message;
+		if (!err.response || err.response.status === 500) {
+			message = 'Unable to login. Please try again later.';
+		} else {
+			message = err.response.data.message;
+		}
+
+		dispatch(authError({ message }));
+		dispatch(clearAuth());
+		clearAuthToken(authToken);
+	}
 };
