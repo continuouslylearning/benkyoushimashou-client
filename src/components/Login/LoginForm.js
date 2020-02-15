@@ -1,11 +1,11 @@
 import React from 'react';
-import { getDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Field, reduxForm, focus, clearSubmitErrors } from 'redux-form';
 import Input from '../Input/Input';
 import { login } from '../../actions/auth';
 
 const LoginForm = (props) => {
-	const dispatch = getDispatch();
+	const dispatch = useDispatch();
 
 	const onSubmit = (values) => {
 		return dispatch(login(values.username, values.password, true));

@@ -1,13 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { clearAuth } from '../../actions/auth';
 import { clearAuthToken } from '../../local-storage';
 import './Header.css';
 import signoutIcon from '../../images/sign-out.svg';
 
 export default () => {
-	const loggedIn = useSelector(state => state.auth.currentUser != null);
+	const dispatch = useDispatch();
+	const loggedIn = useSelector(state => state.auth.currentUser !== null);
 
 	const logOut = () => {
 		dispatch(clearAuth());
