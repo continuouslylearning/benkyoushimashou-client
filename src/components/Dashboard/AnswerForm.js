@@ -1,39 +1,23 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 
-class AnswerForm extends React.Component {	
-	static propTypes = {
-		loading: PropTypes.bool.isRequired,
-		onInputChange: PropTypes.func.isRequired,	
-		submitAnswer: PropTypes.func.isRequired,
-		submitting: PropTypes.bool.isRequired,
-		value: PropTypes.string.isRequired
-	}
+export default (props) => {	
+	const loading = useSelector(state => state.currentQuestion.loading);
+	const submitting = useSelector(state => state.currentQuestion.submitting);
+	const {  onInputChange, submitAnswer, value } = props;
+	const disable = loading || submitting;
 
-	render = () => {
-		const { loading, onInputChange, submitAnswer, submitting, value } = this.props;
-		const disable = loading || submitting;
-
-		return (
-			<form className="guess-form" onSubmit={submitAnswer}>
-				<input
-					className='answer'
-					disabled={disable}
-					type="text"
-					placeholder='Enter your answer'
-					onChange={onInputChange}
-					value={value}
-				/>
-				<button disabled={disable} type="submit">Submit</button>
-			</form>
-		);
-	}
+	return (
+		<form className="guess-form" onSubmit={submitAnswer}>
+			<input
+				className='answer'
+				disabled={disable}
+				type="text"
+				placeholder='Enter your answer'
+				onChange={onInputChange}
+				value={value}
+			/>
+			<button disabled={disable} type="submit">Submit</button>
+		</form>
+	);
 }
-
-const mapStateToProps = (state) => ({
-	loading: state.currentQuestion.loading,
-	submitting: state.currentQuestion.submitting
-});
-
-export default connect(mapStateToProps)(AnswerForm);
