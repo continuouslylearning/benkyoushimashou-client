@@ -1,15 +1,18 @@
 import React from 'react';
-import { connect } from  'react-redux';
+import { useSelector } from  'react-redux';
 import { Link, Redirect } from 'react-router-dom';
 import Error from '../Error/Error';
 import './Landing.css';
 
-const Landing = (props) => {
-	if (props.error !== null) {
+export default () => {
+	const error = useSelector(state => state.auth.error);
+	const loggedIn = useSelector(state => state.auth.currentUser != null);
+
+	if (error !== null) {
 		return <Error />;
 	}
 
-	if (props.loggedIn) {
+	if (loggedIn) {
 		return <Redirect to='/dashboard'/>;
 	}
 
@@ -28,12 +31,3 @@ const Landing = (props) => {
 		</div>
 	);
 }
-
-const mapStateToProps = (state) => {
-	return {
-		error: state.auth.error,
-		loggedIn: state.auth.currentUser !== null
-	};
-};
-
-export default connect(mapStateToProps)(Landing);

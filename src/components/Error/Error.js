@@ -1,7 +1,6 @@
 import React from 'react';
-import { connect } from 'react-redux';
 
-const Error = (props) => {
+export default () => {
 	return (
 		<div className='landing'>			
 			<div className='landing-content'>
@@ -12,5 +11,3 @@ const Error = (props) => {
 		</div>
 	);
 }
-
-export default connect()(Error);

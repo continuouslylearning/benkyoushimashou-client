@@ -1,100 +1,65 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { useEffect, useState } from 'react';
 import './Dashboard.css';
-import { connect } from 'react-redux';
-import requiresLogin from '../RequiresLogin/RequiresLogin';
+import { useDispatch, useSelector } from 'react-redux';
 import { fetchQuestion, answeredQuestion } from '../../actions/questions';
 import FeedBack from './Feedback';
 import AnswerForm from './AnswerForm';
 import CharacterBox from './CharacterBox';
 import Loading from '../Loading/Loading';
+import RequiresLogin from '../RequiresLogin/RequiresLogin';
 
-export class Dashboard extends React.Component {
-  	constructor(props) {
-		super(props);
+const Dashboard = () => {
+	const dispatch = useDispatch();
+	const [ answered, setAnswered ] = useState(false);
+	const [ value, setValue ] = useState('');
+	const [ answeredCorrectly, setAnsweredCorrectly] = useState(false);
+	const character = useSelector(state => state.currentQuestion.character);
+	const romaji = useSelector(state => state.currentQuestion.romaji);
+	
+	useEffect(() => {
+		dispatch(fetchQuestion());
+	}, [dispatch]);
 
-		this.state = {
-			answered: false,
-			value: ''
-		};
-	}
+	const next = () => {
+		setAnswered(false);
+		setValue('');
 
-	static propTypes = {
-		character: PropTypes.string,
-		romaji: PropTypes.string
-	};
-
-	componentDidMount = () => {
-		this.props.dispatch(fetchQuestion());
+		return dispatch(fetchQuestion());
   	}
 
-	next = () => {
-		this.setState({
-	  		answered: false,
-			value: ''
-		});
-
-		return this.props.dispatch(fetchQuestion());
-  	}
-
-  	onInputChange = (e) => {
-		this.setState({
-	  		value: e.target.value
-		});
-  	}
-
-	submitAnswer = (event) => {
+	const submitAnswer = (event) => {
 		event.preventDefault();
 
-		const { romaji } = this.props;
-		const answeredCorrectly = this.state.value.toLowerCase().trim() === romaji;
+		const answeredCorrectly = value.toLowerCase().trim() === romaji;
 	
-		return this.props.dispatch(answeredQuestion(answeredCorrectly))
+		return dispatch(answeredQuestion(answeredCorrectly))
 	  		.then(() => {
-		  		this.setState({
-					answered: true,
-					answeredCorrectly
-		  		});
+		  		setAnswered(true);
+				setAnsweredCorrectly(answeredCorrectly);
 			});
   	}
 
-	render = () => {
-		const { answered, answeredCorrectly, value } = this.state;
-		const { character } = this.props;
+	if (character === null) {
+		return <Loading/>;
+	}
 
-		if (character === null) {
-			return (
-				<Loading/>
-			);
+	return (
+		<div className="dashboard">
+		<CharacterBox />
+		{
+			answered ?
+				<FeedBack
+					answeredCorrectly={answeredCorrectly}
+					next={next}
+				/> :
+				<AnswerForm
+					submitAnswer={submitAnswer}
+					value={value}
+					onInputChange={(e) => setValue(e.target.value)}
+				/>
 		}
-
-		return (
-	  		<div className="dashboard">
-			<CharacterBox />
-			{
-				answered ?
-					<FeedBack
-						answeredCorrectly={answeredCorrectly}
-						next={this.next}
-					/> :
-					<AnswerForm
-						submitAnswer={this.submitAnswer}
-						value={value}
-						onInputChange={this.onInputChange}
-					/>
-			}
-	  		</div>
-		);
-  	}
+		</div>
+	);
 }
 
-const mapStateToProps = (state) => {
-	const { character, romaji } = state.currentQuestion;
-
-	return {
-		romaji,
-		character
-	};
-};
-
-export default requiresLogin()(connect(mapStateToProps)(Dashboard));
+export default RequiresLogin()(Dashboard);

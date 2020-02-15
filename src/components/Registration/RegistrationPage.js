@@ -1,11 +1,12 @@
 import React from 'react';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
 import RegistrationForm from './RegistrationForm';
 import '../Form.css';
 
-export const RegistrationPage = (props) => {
-	if (props.loggedIn) {
+export default (props) => {
+	const loggedIn = useSelector(state => state.auth.currentUser !== null);
+	if (loggedIn) {
 		return <Redirect to="/dashboard" />;
 	}
 
@@ -19,9 +20,3 @@ export const RegistrationPage = (props) => {
 		</div>
 	);
 }
-
-const mapStateToProps = (state) => ({
-	loggedIn: state.auth.currentUser !== null
-});
-
-export default connect(mapStateToProps)(RegistrationPage);
