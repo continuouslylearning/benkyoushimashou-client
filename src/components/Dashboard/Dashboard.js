@@ -12,12 +12,13 @@ const Dashboard = () => {
 	const dispatch = useDispatch();
 	const [ answered, setAnswered ] = useState(false);
 	const [ value, setValue ] = useState('');
-	const answeredCorrectly = useState(false);
+	const [ answeredCorrectly, setAnsweredCorrectly] = useState(false);
 	const character = useSelector(state => state.currentQuestion.character);
+	const romaji = useSelector(state => state.currentQuestion.romaji);
 	
 	useEffect(() => {
 		dispatch(fetchQuestion());
-	}, []);
+	}, [dispatch]);
 
 	const next = () => {
 		setAnswered(false);
@@ -29,15 +30,12 @@ const Dashboard = () => {
 	const submitAnswer = (event) => {
 		event.preventDefault();
 
-		const { romaji } = this.props;
-		const answeredCorrectly = this.state.value.toLowerCase().trim() === romaji;
+		const answeredCorrectly = value.toLowerCase().trim() === romaji;
 	
-		return this.props.dispatch(answeredQuestion(answeredCorrectly))
+		return dispatch(answeredQuestion(answeredCorrectly))
 	  		.then(() => {
-		  		this.setState({
-					answered: true,
-					answeredCorrectly
-		  		});
+		  		setAnswered(true);
+				setAnsweredCorrectly(answeredCorrectly);
 			});
   	}
 

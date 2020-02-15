@@ -1,44 +1,31 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { useEffect } from 'react';
 import { Redirect } from 'react-router-dom';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { login } from '../../actions/auth';
 import Loading from '../Loading/Loading';
 
-class Demo extends React.Component {
-	static propTypes = {
-		error: PropTypes.object,
-		loggedIn: PropTypes.bool.isRequired
-	};
+export default () => {
+	const dispatch = useDispatch();
+	const loggedIn = useSelector(state => state.auth.currentUser !== null);
+	const error = useSelector(state => state.auth.error);
 
-	componentDidMount = () => {
-		return this.props.dispatch(login('demouser', 'password'));
+	useEffect(() => {
+		dispatch(login('demouser', 'password'));
+	}, [dispatch]);
+
+	if (error !== null) {
+		return <Redirect to='/' />
 	}
 
-	render = () => {
-		const { error, loggedIn } = this.props;
+	if (loggedIn) {
+		return <Redirect to='/dashboard' />;
+	}
 
-		if (error !== null) {
-			return <Redirect to='/' />
-		}
-
-		if (loggedIn) {
-			return <Redirect to='/dashboard' />;
-		}
-
-		return (
-			<div className='landing'>
-				<div className='landing-content'>
-					<Loading/>
-				</div>
+	return (
+		<div className='landing'>
+			<div className='landing-content'>
+				<Loading/>
 			</div>
-		);
-	}
+		</div>
+	);
 }
-
-const mapStateToProps = state => ({
-	loggedIn: state.auth.currentUser !== null,
-	error: state.auth.error
-});
-
-export default connect(mapStateToProps)(Demo);
